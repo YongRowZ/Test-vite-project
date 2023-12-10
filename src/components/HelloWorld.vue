@@ -1,70 +1,63 @@
 <script setup>
-import { ref } from 'vue'
+import { reactive } from 'vue'
+
+const holderAdd = 'Введите название'
+const holderSearch = 'Введите для поиска'
+
+const data = reactive({
+  inputValueAdd: '',
+  inputValueSearch: '',
+  notes: ['Test1', 'Test2', 'Test3', 'q'],
+  notesSerch: []
+})
+
+const addNewNote = () => {
+  data.notes.push(data.inputValueAdd)
+  data.inputValueAdd = ''
+}
+
+const searchNotes = () => {
+  data.notesSerch = data.notes.filter(el => el.match(data.inputValueSearch))
+}
 
 defineProps({
   msg: String,
 })
 
-const count = ref(0)
-</script>
-
-<script>
-export default
-{
-  data(){
-    return{
-      holderAdd: 'Введите название',
-      holderSearch: 'Введите для поиска',
-      inputValueAdd: '',
-      inputValueSearch: '',
-      notes: ['Test1', 'Test2', 'Test3', 'q'],
-      notesSerch: []
-    }
-  },
-
-  methods:{
-        addNewNote(){
-            this.notes.push(this.inputValueAdd)
-            this.inputValueAdd = ''
-        },
-
-        searchNotes(event){
-            this.inputValueSearch = event.target.value
-            this.notesSerch = this.notes.filter(el => el.match(this.inputValueSearch))
-        }
-  }
-}
 </script>
 
 <template>
   <h1>{{ msg }}</h1>
   <div class="form-add">
     <input 
-      type="text" 
-      v-bind:placeholder="holderAdd"
-      v-model="inputValueAdd"
+      type="text"
+      v-bind:placeholder = "holderAdd"
+      v-model = data.inputValueAdd
     />
-    <button class="btn" v-on:click="addNewNote">Добавить</button>
+    <button class="btn" v-on:click = "addNewNote">Добавить</button>
   </div>
   <div class="form-search">
     <input 
       type="text"
       v-bind:placeholder="holderSearch"
+      v-model="data.inputValueSearch"
       v-on:input="searchNotes"
       v-on:keypress="searchNotes"
     />
   </div>
   <hr />
-  <ul class="list" v-if="inputValueSearch.length !== 0">
-    <li class="list-item" v-for="note of notesSerch">
+  <div>
+    <ul class="list" v-if="data.inputValueSearch.length !== 0">
+    <li class="list-item" v-for="note of data.notesSerch">
       {{ note }}
     </li>
   </ul>
-  <ul class="list" v-else>
-    <li class="list-item" v-for="note of notes">
+    <ul class="list" v-else>
+    <li class="list-item" v-for="note of data.notes">
       {{ note }}
     </li>
   </ul>
+  </div>
 </template>
 
 <style scoped>
