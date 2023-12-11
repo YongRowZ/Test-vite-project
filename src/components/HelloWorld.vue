@@ -1,24 +1,24 @@
 <script setup>
-import { reactive } from 'vue'
+import { ref, watch } from 'vue'
 
 const holderAdd = 'Введите название'
 const holderSearch = 'Введите для поиска'
 
-const data = reactive({
-  inputValueAdd: '',
-  inputValueSearch: '',
-  notes: ['Test1', 'Test2', 'Test3', 'q'],
-  notesSerch: []
-})
+
+const inputValueAdd = ref('')
+const inputValueSearch = ref('')
+const notes = ref(['Test1', 'Test2', 'Test3', 'q'])
+const notesSerch = ref([])
 
 const addNewNote = () => {
-  data.notes.push(data.inputValueAdd)
-  data.inputValueAdd = ''
+  notes.value.push(inputValueAdd.value)
+  inputValueAdd.value = ''
 }
 
-const searchNotes = () => {
-  data.notesSerch = data.notes.filter(el => el.match(data.inputValueSearch))
-}
+watch (inputValueSearch, (nv) => {
+  inputValueSearch.value = nv
+  notesSerch.value = notes.value.filter(el => el.match(inputValueSearch.value))
+})
 
 defineProps({
   msg: String,
@@ -32,7 +32,7 @@ defineProps({
     <input 
       type="text"
       v-bind:placeholder = "holderAdd"
-      v-model = data.inputValueAdd
+      v-model="inputValueAdd"
     />
     <button class="btn" v-on:click = "addNewNote">Добавить</button>
   </div>
@@ -40,20 +40,18 @@ defineProps({
     <input 
       type="text"
       v-bind:placeholder="holderSearch"
-      v-model="data.inputValueSearch"
-      v-on:input="searchNotes"
-      v-on:keypress="searchNotes"
+      v-model="inputValueSearch"
     />
   </div>
   <hr />
   <div>
-    <ul class="list" v-if="data.inputValueSearch.length !== 0">
-    <li class="list-item" v-for="note of data.notesSerch">
+    <ul class="list" v-if="inputValueSearch.length !== 0">
+    <li class="list-item" v-for="note of notesSerch">
       {{ note }}
     </li>
   </ul>
     <ul class="list" v-else>
-    <li class="list-item" v-for="note of data.notes">
+    <li class="list-item" v-for="note of notes">
       {{ note }}
     </li>
   </ul>
